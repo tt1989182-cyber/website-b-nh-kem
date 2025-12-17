@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Cài extension cần cho Laravel
+# Cài extension cần cho Laravel + PostgreSQL
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
 
 # Enable apache rewrite
 RUN a2enmod rewrite
@@ -26,10 +26,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Cài package PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Set quyền
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Set quyền cho Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Apache config
+# Apache config trỏ về public
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
 
