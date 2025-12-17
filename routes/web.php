@@ -14,7 +14,7 @@ Route::get('/', [PostController::class, 'index'])
 
 Route::get('/home', function () {
     return redirect('/'); // Redirect to your main feed
-})->name('home');
+})->name('home.redirect');
 
 Auth::routes();
 
