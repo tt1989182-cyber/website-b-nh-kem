@@ -1,6 +1,5 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
-# Cài system packages
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -9,28 +8,15 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    && docker-php-ext-configure gd \
-    && docker-php-ext-install \
-        pdo \
-        pdo_pgsql \
-        mbstring \
-        exif \
-        pcntl \
-        bcmath \
-        gd \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install pdo pdo_pgsql mbstring exif bcmath gd
 
-# Cài Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
-
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN php artisan key:generate || true
-RUN php artisan storage:link || true
+EXPOSE 80
 
-CMD ["php-fpm"]
+CMD php artisan serve --host=0.0.0.0 --port=80
