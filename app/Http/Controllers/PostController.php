@@ -39,6 +39,7 @@ class PostController extends Controller
         auth()->user()->posts()->create([
             'caption' => $data['caption'],
             'image_path' => $imagePath,
+                                         'images' => $imagePath, // hoặc '' tùy bạn muốn lưu gì
         ]);
 
         return redirect('/profile/' . auth()->id());
@@ -71,6 +72,7 @@ class PostController extends Controller
         $data = $request->validate([
             'caption' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                                   
         ]);
 
         if($request->hasFile('image')) {
